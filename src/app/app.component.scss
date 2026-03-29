@@ -1,0 +1,146 @@
+// Переменные
+$primary-color: #2c3e50;
+$border-color: #e0e6ed;
+$header-bg: #f8f9fa;
+$text-dark: #333;
+$transition-speed: 0.3s;
+
+.main-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  h1 {
+    color: $primary-color;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border-color;
+
+  thead {
+    background-color: $header-bg;
+    
+    th {
+      padding: 16px;
+      text-align: left;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: #6c757d;
+      letter-spacing: 1px;
+      border-bottom: 2px solid $border-color;
+    }
+  }
+
+  tbody {
+    tr {
+      transition: transform $transition-speed ease, box-shadow $transition-speed ease, background-color 0.4s ease;
+      
+      &:hover {
+        filter: brightness(0.98); // Легкое выделение строки при наведении
+      }
+
+      td {
+        padding: 14px 16px;
+        vertical-align: middle;
+        border-bottom: 1px solid $border-color;
+        color: $text-dark;
+        font-size: 0.95rem;
+
+        // Поле цены
+        b {
+          color: #27ae60;
+          white-space: nowrap;
+        }
+
+        // Ссылка на объявление
+        a {
+          color: #3498db;
+          text-decoration: none;
+          font-weight: 500;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Стили элементов управления внутри таблицы
+select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: white;
+  cursor: pointer;
+  outline: none;
+  font-weight: 600;
+
+  &:focus {
+    border-color: #3498db;
+  }
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all $transition-speed;
+
+  &:hover {
+    border-color: rgba(0,0,0,0.1);
+    background: white;
+  }
+
+  &:focus {
+    background: white;
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  }
+}
+
+.btn-del {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background $transition-speed;
+  opacity: 0.6;
+
+  &:hover {
+    background: #fff0f0;
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .main-container {
+    padding: 1rem;
+  }
+  
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
