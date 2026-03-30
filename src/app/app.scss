@@ -1,191 +1,262 @@
-// Переменные для цветов
-$border-color: #f0f0f0;
-$text-muted: #888;
-$danger-color: #ff4d4f;
+// --- ПЕРЕМЕННЫЕ ---
+$primary-color: #007bff;
+$text-main: #2d3748;
+$text-muted: #94a3b8;
+$bg-body: #f7fafc;
+$border-color: #e2e8f0;
+$radius: 14px;
 $shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-$modal-overlay: rgba(0, 0, 0, 0.4);
 
+// --- БАЗОВЫЕ СТИЛИ ---
 .main-container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 40px 20px;
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  color: $text-main;
+  background-color: $bg-body;
+  min-height: 100vh;
 
-  h1 {
-    font-weight: 700;
+  .header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 30px;
-    color: #333;
+
+    h1 { font-size: 1.8rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+    .count-badge {
+      background: white; padding: 6px 16px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600; color: $text-muted; box-shadow: $shadow;
+    }
   }
 }
 
-// Таблица в стиле тайлов
+// --- ШАПКА ТАБЛИЦЫ (Горизонтальное выравнивание) ---
 .ads-table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 10px; // Отступы между "карточками"
+  border-spacing: 0 10px;
 
   thead th {
+    padding: 10px 15px;
+    border: none;
     text-align: left;
-    padding: 0 15px 10px;
-    color: $text-muted;
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    vertical-align: middle;
+
+    // Обертка для выравнивания текста и элементов в одну линию
+    .header-inline-wrapper {
+      display: flex;
+      align-items: center; // Центрирование по вертикали
+      gap: 10px;           // Расстояние между надписью и иконкой/фильтром
+      height: 40px;        // Единая высота для всех заголовков
+    }
+
+    .column-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      white-space: nowrap;
+    }
   }
 
-  .ad-row {
+  // Сортируемые ячейки
+  .sortable-cell {
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    background: #fff;
+    user-select: none;
+    &:hover .column-label { color: $primary-color; }
+    
+    .sort-icon {
+      font-size: 0.7rem;
+      color: $primary-color;
+      opacity: 0.8;
+    }
+  }
 
-    td {
-      padding: 18px 15px;
-      border-top: 1px solid $border-color;
-      border-bottom: 1px solid $border-color;
+  // КОМПАКТНЫЙ СЕЛЕКТОР КОМНАТ (ЦИФРА)
+  .header-filter-cell {
+    position: relative;
 
-      &:first-child {
-        border-left: 1px solid $border-color;
-        border-radius: 12px 0 0 12px;
+    .rooms-selector-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: white;
+      border: 1px solid $border-color;
+      padding: 4px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      min-width: 50px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #cbd5e0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
       }
 
-      &:last-child {
-        border-right: 1px solid $border-color;
-        border-radius: 0 12px 12px 0;
+      .current-digit {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: $text-main;
       }
 
-      &.price-cell {
-        font-weight: 700;
-        color: #000;
-        font-size: 1.1rem;
-      }
-
-      .address-link {
-        color: #007bff;
-        text-decoration: none;
-        &:hover { text-decoration: underline; }
+      .mini-chevron {
+        font-size: 0.5rem;
+        color: #cbd5e0;
       }
     }
 
-    &:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      filter: brightness(0.98);
+    // Выпадающее меню
+    .custom-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      z-index: 1000;
+      background: white;
+      min-width: 160px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border: 1px solid $border-color;
+      overflow: hidden;
+      animation: dropdownFade 0.2s ease-out;
+
+      .dropdown-item {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        color: #4a5568;
+        cursor: pointer;
+        &:hover { background: #f7fafc; color: $primary-color; }
+        &.active { background: #ebf8ff; color: $primary-color; font-weight: 700; }
+        &:not(:last-child) { border-bottom: 1px solid #f8fafc; }
+      }
     }
   }
 }
 
-// Модальное окно
+// --- СТРОКИ ТАБЛИЦЫ (Карточки) ---
+.ad-row {
+  background: white;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  td {
+    padding: 20px 15px;
+    border-top: 1px solid $border-color;
+    border-bottom: 1px solid $border-color;
+
+    &:first-child { border-left: 1px solid $border-color; border-radius: $radius 0 0 $radius; }
+    &:last-child { border-right: 1px solid $border-color; border-radius: 0 $radius $radius 0; }
+
+    &.price-cell {
+      font-weight: 800;
+      font-size: 1.05rem;
+      &.negotiable { color: $text-muted; font-style: italic; font-weight: 400; font-size: 0.9rem; }
+    }
+
+    .address-link {
+      color: $primary-color;
+      text-decoration: none;
+      font-weight: 500;
+      &:hover { text-decoration: underline; }
+    }
+
+    .date-cell { color: $text-muted; font-size: 0.85rem; }
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+  }
+}
+
+// --- МОДАЛЬНОЕ ОКНО ПРОСМОТРА ---
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: $modal-overlay;
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1100;
   animation: fadeIn 0.2s ease;
 
   .modal-window {
     background: white;
     width: 90%;
-    max-width: 440px;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
     position: relative;
-    animation: slideUp 0.3s ease;
+    animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
     .close-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      border: none;
-      background: #f5f5f5;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      &:hover { background: #eee; }
+      position: absolute; top: 20px; right: 20px;
+      border: none; background: #f1f5f9; width: 34px; height: 34px;
+      border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      &:hover { background: #e2e8f0; }
     }
 
-    h3 { margin-top: 0; font-size: 1.4rem; }
-    .ad-info-sub { color: $text-muted; font-size: 0.9rem; margin-bottom: 25px; }
+    h3 { margin: 0 0 30px; font-size: 1.6rem; font-weight: 800; color: #1a202c; }
+
+    .view-content {
+      .info-row {
+        margin-bottom: 14px; font-size: 1rem; display: flex; gap: 15px;
+        strong { color: $text-muted; min-width: 110px; font-weight: 500; }
+      }
+
+      .comment-section {
+        background: #f8fafc; padding: 22px; border-radius: 18px; margin: 30px 0;
+        border: 1px solid #edf2f7;
+        strong { display: block; font-size: 0.7rem; text-transform: uppercase; color: $text-muted; margin-bottom: 8px; letter-spacing: 0.6px; }
+        p { margin: 0; color: #4a5568; line-height: 1.6; font-style: italic; }
+      }
+
+      // КНОПКА (Центрированная)
+      .btn-primary {
+        display: block;
+        width: 100%;
+        max-width: 380px;
+        margin: 20px auto 0;
+        padding: 16px;
+        background: #000;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 14px;
+        font-weight: 700;
+        transition: transform 0.1s, opacity 0.2s;
+
+        &:hover { opacity: 0.9; }
+        &:active { transform: scale(0.97); }
+      }
+    }
   }
 }
 
-// Элементы формы в модальном окне
-.form-group {
-  margin-bottom: 20px;
-  label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
-  
-  select, textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-family: inherit;
-    transition: border-color 0.2s;
-    &:focus { outline: none; border-color: #007bff; }
-  }
+// --- АНИМАЦИИ ---
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.btn-delete {
-  width: 100%;
-  padding: 14px;
-  background: #fff1f0;
-  color: $danger-color;
-  border: 1px solid #ffa39e;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  &:hover { background: $danger-color; color: white; }
-}
-
-.header-flex {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-
-  .count-badge {
-    background: #eee;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: #666;
-  }
-}
-
-.sortable {
-  cursor: pointer;
-  user-select: none;
-  &:hover {
-    color: #007bff;
-  }
-}
-
-.date-cell {
-  font-size: 0.85rem;
-  color: #888;
-  white-space: nowrap;
-}
-
-// Изменим структуру таблицы под 4 колонки
-.ads-table {
-  th, td {
-    &:nth-child(1) { width: 15%; } // Комнаты
-    &:nth-child(2) { width: 20%; } // Цена
-    &:nth-child(3) { width: 45%; } // Адрес
-    &:nth-child(4) { width: 20%; } // Дата
-  }
+@keyframes modalSlide {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+// --- ШИРИНА КОЛОНОК ---
+.ads-table {
+  th, td {
+    &:nth-child(1) { width: 16%; } // Комнаты
+    &:nth-child(2) { width: 18%; } // Цена
+    &:nth-child(3) { width: 46%; } // Адрес
+    &:nth-child(4) { width: 20%; } // Дата
+  }
+}
