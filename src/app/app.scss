@@ -5,7 +5,8 @@ $text-muted: #94a3b8;
 $bg-body: #f7fafc;
 $border-color: #e2e8f0;
 $radius: 14px;
-$shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+$shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+$shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
 
 // --- БАЗОВЫЕ СТИЛИ ---
 .main-container {
@@ -18,182 +19,46 @@ $shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   min-height: 100vh;
 }
 
+// --- ЗАГОЛОВОК И КОТИК ---
 .header-flex {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  h1 { font-size: 1.8rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
-  .count-badge {
-    background: white; padding: 6px 16px; border-radius: 20px;
-    font-size: 0.85rem; font-weight: 600; color: $text-muted; box-shadow: $shadow;
-  }
-}
 
-// --- ШАПКА ТАБЛИЦЫ ---
-.ads-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 
-  thead th {
-    padding: 10px 15px;
-    border: none;
-    text-align: left;
-    vertical-align: middle;
+    h1 { font-size: 1.8rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
 
-    .header-inline-wrapper {
+    .cat-link {
       display: flex;
-      align-items: center; 
-      gap: 8px;           
-      height: 40px; 
-    }
-
-    .column-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: $text-muted; // ВСЕГДА СЕРЫЙ
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      white-space: nowrap;
-      line-height: 1;
-      transition: color 0.2s;
-    }
-  }
-
-  // СОРТИРОВКА
-  .sort-clickable {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    user-select: none;
-    
-    &:hover {
-      .column-label, .sort-icon { color: $primary-color; }
-    }
-  }
-
-  .sort-icon {
-    font-size: 0.9rem;
-    color: #cbd5e0; // Серый по умолчанию
-    line-height: 1;
-    margin-left: 2px;
-    transition: color 0.2s;
-    
-    &.active { 
-      color: $primary-color; // СИНЯЯ ТОЛЬКО СТРЕЛОЧКА
-      font-weight: bold; 
-    }
-  }
-
-  // ОБЩИЕ СТИЛИ ДЛЯ ТРИГГЕРОВ (Комнаты и Цена)
-  .rooms-selector-box, .price-filter-trigger {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    border: 1px solid $border-color;
-    border-radius: 8px;
-    height: 32px;
-    box-sizing: border-box; 
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0 10px;
-
-    &:hover {
-      border-color: #cbd5e0;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-  }
-
-  // Специфика для КОМНАТ
-  .rooms-selector-box {
-    min-width: 50px;
-    gap: 6px;
-    .current-digit { font-size: 0.9rem; font-weight: 800; color: $text-main; line-height: 1; }
-    .mini-chevron { font-size: 0.5rem; color: #cbd5e0; }
-  }
-
-  // Специфика для ЦЕНЫ (Лупа)
-  .price-filter-trigger {
-    min-width: 44px;
-    .filter-icon {
-      font-size: 0.85rem;
-      opacity: 0.5;
-      line-height: 1;
-    }
-    
-    // ГОЛУБОЙ ФОН ПРИ АКТИВНОМ ДИАПАЗОНЕ
-    &.active {
-      background: #eef7ff; 
-      border-color: $primary-color;
-      .filter-icon { opacity: 1; filter: none; }
-    }
-  }
-
-  // ВЫПАДАЮЩИЕ СПИСКИ
-  .custom-dropdown, .price-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    z-index: 1000;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    border: 1px solid $border-color;
-    overflow: hidden;
-    animation: dropdownFade 0.2s ease-out;
-  }
-
-  .custom-dropdown {
-    left: 0; min-width: 160px;
-    .dropdown-item {
-      padding: 12px 16px; font-size: 0.85rem; color: #4a5568; cursor: pointer;
-      &:hover { background: #f7fafc; color: $primary-color; }
-      &.active { background: #ebf8ff; color: $primary-color; font-weight: 700; }
-    }
-  }
-
-  .price-dropdown {
-    left: 50%; transform: translateX(-50%);
-    width: 220px; padding: 15px; cursor: default;
-    .price-dropdown-header { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: $text-muted; margin-bottom: 12px; text-align: center; }
-    .price-inputs {
-      display: flex; gap: 8px; margin-bottom: 15px;
-      input { 
-        width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem; outline: none;
-        &::-webkit-inner-spin-button { appearance: none; }
+      transition: transform 0.2s ease-in-out;
+      &:hover { transform: scale(1.15); }
+      
+      .header-cat-gif {
+        height: 45px;
+        width: auto;
+        border-radius: 10px;
+        box-shadow: $shadow-sm;
       }
     }
-    .price-actions {
-      display: flex; gap: 8px;
-      button { flex: 1; padding: 8px; font-size: 0.75rem; font-weight: 700; border-radius: 8px; cursor: pointer; border: none; }
-      .btn-clear { background: #f1f5f9; color: #64748b; }
-      .btn-apply { background: $primary-color; color: white; }
-    }
   }
 }
 
-// --- СТРОКИ ТАБЛИЦЫ ---
-.ad-row {
-  background: white;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  td {
-    padding: 20px 15px;
-    border-top: 1px solid $border-color;
-    border-bottom: 1px solid $border-color;
-    &:first-child { border-left: 1px solid $border-color; border-radius: $radius 0 0 $radius; }
-    &:last-child { border-right: 1px solid $border-color; border-radius: 0 $radius $radius 0; }
-    &.price-cell { font-weight: 800; font-size: 1.05rem; &.negotiable { color: $text-muted; font-style: italic; font-weight: 400; font-size: 0.9rem; } }
-    .address-link { color: $primary-color; text-decoration: none; font-weight: 500; &:hover { text-decoration: underline; } }
-    .date-cell { color: $text-muted; font-size: 0.85rem; }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  .count-badge {
+    background: white; padding: 6px 16px; border-radius: 20px;
+    font-size: 0.85rem; font-weight: 600; color: $text-muted; box-shadow: $shadow-sm;
   }
-  &:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
 }
 
-// --- ИНТЕРФЕЙС ---
-.header-actions { display: flex; align-items: center; gap: 15px; }
+// --- ВАЛЮТЫ ---
 .currency-switcher {
   display: flex; background: #edf2f7; padding: 4px; border-radius: 10px; border: 1px solid $border-color;
   button {
@@ -202,34 +67,126 @@ $shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
 }
 
-// --- МОДАЛЬНОЕ ОКНО ---
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center; z-index: 1100; animation: fadeIn 0.2s ease;
-  .modal-window {
-    background: white; width: 90%; max-width: 500px; padding: 40px; border-radius: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-    position: relative; animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    .close-btn { position: absolute; top: 20px; right: 20px; border: none; background: #f1f5f9; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; &:hover { background: #e2e8f0; } }
-    h3 { margin: 0 0 30px; font-size: 1.6rem; font-weight: 800; color: #1a202c; }
-    .view-content {
-      .info-row { margin-bottom: 14px; font-size: 1rem; display: flex; gap: 15px; strong { color: $text-muted; min-width: 110px; font-weight: 500; } }
-      .comment-section { background: #f8fafc; padding: 22px; border-radius: 18px; margin: 30px 0; border: 1px solid #edf2f7; strong { display: block; font-size: 0.7rem; text-transform: uppercase; color: $text-muted; margin-bottom: 8px; letter-spacing: 0.6px; } p { margin: 0; color: #4a5568; line-height: 1.6; font-style: italic; } }
-      .btn-primary { display: block; width: 100%; max-width: 380px; margin: 20px auto 0; padding: 16px; background: #000; color: #fff; text-align: center; text-decoration: none; border-radius: 14px; font-weight: 700; transition: transform 0.1s; &:active { transform: scale(0.97); } }
+// --- ШАПКА ТАБЛИЦЫ ---
+.ads-table {
+  width: 100%; border-collapse: separate; border-spacing: 0 10px;
+
+  thead th {
+    padding: 10px 15px; border: none; text-align: left; vertical-align: middle;
+    .header-inline-wrapper { display: flex; align-items: center; gap: 10px; height: 40px; }
+    .column-label {
+      font-size: 0.75rem; font-weight: 700; color: $text-muted; text-transform: uppercase; letter-spacing: 0.8px; line-height: 1;
+      &.static { cursor: default; }
+    }
+  }
+
+  .sort-clickable {
+    display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none;
+    &:hover { .column-label, .sort-icon { color: $primary-color; } }
+  }
+  .sort-icon {
+    font-size: 0.9rem; color: #cbd5e0; line-height: 1; transition: color 0.2s;
+    &.active { color: $primary-color; font-weight: bold; }
+  }
+
+  // КНОПКИ-ТРИГГЕРЫ
+  .rooms-selector-box, .price-filter-trigger {
+    position: relative; // Ключевое для вложенных dropdown
+    display: flex; align-items: center; justify-content: center;
+    background: white; border: 1px solid $border-color; border-radius: 8px;
+    height: 32px; box-sizing: border-box; cursor: pointer; padding: 0 12px; transition: all 0.2s ease;
+    &:hover { border-color: #cbd5e0; }
+  }
+
+  .rooms-selector-box {
+    min-width: 50px; gap: 6px;
+    .current-digit { font-size: 0.9rem; font-weight: 800; }
+    .mini-chevron { font-size: 0.5rem; color: #cbd5e0; }
+  }
+
+  .price-filter-trigger {
+    min-width: 44px;
+    .filter-icon { font-size: 0.9rem; opacity: 0.5; }
+    &.active {
+      background: #eef7ff; border-color: $primary-color;
+      .filter-icon { opacity: 1; }
+    }
+  }
+
+  // ВЫПАДАЮЩИЕ СПИСКИ
+  .custom-dropdown, .price-dropdown {
+    position: absolute; top: calc(100% + 8px); z-index: 1000;
+    background: white; border-radius: 12px; box-shadow: $shadow-lg; border: 1px solid $border-color; overflow: hidden;
+  }
+
+  .custom-dropdown {
+    left: 0; min-width: 180px;
+    animation: dropdownFadeSimple 0.2s ease-out forwards;
+    .dropdown-item {
+      padding: 12px 16px; font-size: 0.85rem; color: #4a5568; cursor: pointer;
+      &:hover { background: #f7fafc; color: $primary-color; }
+      &.active { background: #ebf8ff; color: $primary-color; font-weight: 700; }
+    }
+  }
+
+  .price-dropdown {
+    left: 50%; width: 220px; padding: 15px; cursor: default;
+    animation: dropdownFadeCenter 0.2s ease-out forwards; // Сохраняет X-центрирование
+    .price-dropdown-header { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: $text-muted; margin-bottom: 12px; text-align: center; }
+    .price-inputs {
+      display: flex; gap: 8px; margin-bottom: 15px;
+      input { width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; }
+    }
+    .price-actions {
+      display: flex; gap: 8px;
+      button { flex: 1; padding: 8px; font-size: 0.75rem; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; }
+      .btn-clear { background: #f1f5f9; color: #64748b; }
+      .btn-apply { background: $primary-color; color: white; }
     }
   }
 }
 
-// --- АНИМАЦИИ ---
-@keyframes dropdownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes modalSlide { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+// --- СТРОКИ-КАРТОЧКИ ---
+.ad-row {
+  background: white; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  td {
+    padding: 20px 15px; border-top: 1px solid $border-color; border-bottom: 1px solid $border-color;
+    &:first-child { border-left: 1px solid $border-color; border-radius: $radius 0 0 $radius; }
+    &:last-child { border-right: 1px solid $border-color; border-radius: 0 $radius $radius 0; }
+    &.price-cell { font-weight: 800; font-size: 1.05rem; color: #000; &.negotiable { color: $text-muted; font-style: italic; font-weight: 400; } }
+    .address-link { color: $primary-color; text-decoration: none; font-weight: 500; &:hover { text-decoration: underline; } }
+  }
+  &:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+}
 
-// --- ШИРИНА КОЛОНОК ---
+// --- МОДАЛКА ---
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center; z-index: 1100;
+  .modal-window {
+    background: white; width: 90%; max-width: 500px; padding: 40px; border-radius: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); position: relative; animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    h3 { margin: 0 0 30px; font-size: 1.6rem; font-weight: 800; }
+    .close-btn { position: absolute; top: 20px; right: 20px; border: none; background: #f1f5f9; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; &:hover { background: #e2e8f0; } }
+    .info-row { margin-bottom: 14px; font-size: 1rem; display: flex; gap: 15px; strong { color: $text-muted; min-width: 110px; font-weight: 500; } }
+    .comment-section { background: #f8fafc; padding: 22px; border-radius: 18px; margin: 30px 0; border: 1px solid #edf2f7; p { margin: 5px 0 0; font-style: italic; } }
+    .btn-primary { display: block; width: 100%; max-width: 380px; margin: 20px auto 0; padding: 16px; background: #000; color: #fff; text-align: center; border-radius: 14px; font-weight: 700; text-decoration: none; transition: transform 0.1s; &:active { transform: scale(0.97); } }
+  }
+}
+
+// --- АНИМАЦИИ ---
+@keyframes dropdownFadeSimple { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes dropdownFadeCenter { 
+  from { opacity: 0; transform: translateX(-50%) translateY(-10px); } 
+  to { opacity: 1; transform: translateX(-50%) translateY(0); } 
+}
+@keyframes modalSlide { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+// --- СЕТКА ---
 .ads-table {
   th, td {
-    &:nth-child(1) { width: 16%; }
+    &:nth-child(1) { width: 18%; }
     &:nth-child(2) { width: 18%; }
-    &:nth-child(3) { width: 46%; }
+    &:nth-child(3) { width: 44%; }
     &:nth-child(4) { width: 20%; }
   }
 }

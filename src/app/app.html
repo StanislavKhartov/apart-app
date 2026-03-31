@@ -1,6 +1,12 @@
 <div class="main-container">
+  <!-- ШАПКА С ТИТУЛОМ И ВАЛЮТАМИ -->
   <div class="header-flex">
-    <h1>🏠 Kufar Ads</h1>
+    <div class="title-group">
+      <a href="https://t.me/GdeZhitBot" target="_blank" class="cat-link">
+        <img src="cat.gif" alt="Cat" class="header-cat-gif">
+      </a>
+      <h1>Kufar Ads</h1>
+    </div>
     <div class="header-actions">
       <div class="currency-switcher">
         <button [class.active]="currency() === 'BYN'" (click)="currency.set('BYN')">BYN</button>
@@ -13,28 +19,28 @@
   <table class="ads-table">
     <thead>
       <tr>
-        <!-- 1. КОМНАТЫ -->
+        <!-- КОЛОНКА 1: КОМНАТЫ (Только фильтр, без сортировки) -->
         <th class="header-filter-cell">
           <div class="header-inline-wrapper">
-            <span class="column-label">Комнаты</span>
+            <span class="column-label static">Комнаты</span>
             <div class="rooms-selector-box" (click)="toggleFilter($event)">
               <span class="current-digit">{{ getRoomDigit(roomsFilter()) }}</span>
               <span class="mini-chevron">▼</span>
 
               @if (isFilterOpen()) {
-                <div class="custom-dropdown" (click)="$event.stopPropagation()">
-                  @for (opt of roomOptions(); track opt) {
-                    <div class="dropdown-item" [class.active]="roomsFilter() === opt" (click)="selectRoom(opt)">
-                      {{ opt === 'all' ? 'Все варианты' : opt }}
-                    </div>
-                  }
+              <div class="custom-dropdown" (click)="$event.stopPropagation()">
+                @for (opt of roomOptions(); track opt) {
+                <div class="dropdown-item" [class.active]="roomsFilter() === opt" (click)="selectRoom(opt, $event)">
+                  {{ opt === 'all' ? 'Все варианты' : opt }}
                 </div>
+                }
+              </div>
               }
             </div>
           </div>
         </th>
 
-        <!-- 2. ЦЕНА -->
+        <!-- КОЛОНКА 2: ЦЕНА (Сортировка + Фильтр диапазона) -->
         <th class="header-filter-cell">
           <div class="header-inline-wrapper">
             <div class="sort-clickable" (click)="toggleSort('price')">
@@ -44,37 +50,38 @@
               </span>
             </div>
 
-            <div class="price-filter-trigger" [class.active]="appliedMin() || appliedMax()" (click)="togglePriceFilter($event)">
+            <div class="price-filter-trigger" [class.active]="appliedMin() || appliedMax()"
+              (click)="togglePriceFilter($event)">
               <span class="filter-icon">🔍</span>
 
               @if (isPriceFilterOpen()) {
-                <div class="price-dropdown" (click)="$event.stopPropagation()">
-                  <div class="price-dropdown-header">Диапазон ({{ currency() }})</div>
-                  <div class="price-inputs">
-                    <input type="number" placeholder="От" [(ngModel)]="tempMin">
-                    <input type="number" placeholder="До" [(ngModel)]="tempMax">
-                  </div>
-                  <div class="price-actions">
-                    <button class="btn-clear" (click)="clearPriceFilter()">Сброс</button>
-                    <button class="btn-apply" (click)="applyPriceFilter()">ОК</button>
-                  </div>
+              <div class="price-dropdown" (click)="$event.stopPropagation()">
+                <div class="price-dropdown-header">Диапазон ({{ currency() }})</div>
+                <div class="price-inputs">
+                  <input type="number" placeholder="От" [(ngModel)]="tempMin" (click)="$event.stopPropagation()">
+                  <input type="number" placeholder="До" [(ngModel)]="tempMax" (click)="$event.stopPropagation()">
                 </div>
+                <div class="price-actions">
+                  <button class="btn-clear" (click)="clearPriceFilter($event)">Сброс</button>
+                  <button class="btn-apply" (click)="applyPriceFilter($event)">ОК</button>
+                </div>
+              </div>
               }
             </div>
           </div>
         </th>
 
-        <!-- 3. АДРЕС -->
+        <!-- КОЛОНКА 3: АДРЕС -->
         <th class="label-cell">
           <div class="header-inline-wrapper">
             <span class="column-label">Адрес</span>
           </div>
         </th>
 
-        <!-- 4. ДОБАВЛЕНО -->
-        <th class="sortable-cell" (click)="toggleSort('created_at')">
+        <!-- КОЛОНКА 4: ДОБАВЛЕНО -->
+        <th class="sortable-cell">
           <div class="header-inline-wrapper">
-            <div class="sort-clickable">
+            <div class="sort-clickable" (click)="toggleSort('created_at')">
               <span class="column-label">Добавлено</span>
               <span class="sort-icon" [class.active]="sortField() === 'created_at'">
                 {{ sortField() === 'created_at' ? (sortOrder() === 'asc' ? '▲' : '▼') : '' }}
@@ -103,21 +110,27 @@
     </tbody>
   </table>
 
-  <!-- МОДАЛКА -->
+  <!-- МОДАЛЬНОЕ ОКНО -->
   @if (selectedAd(); as ad) {
-    <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal-window" (click)="$event.stopPropagation()">
-        <button class="close-btn" (click)="closeModal()">✕</button>
-        <h3>Информация</h3>
-        <div class="view-content">
-          <div class="info-row"><strong>Адрес:</strong> {{ ad.address }}</div>
-          <div class="info-row"><strong>Цена:</strong> {{ currency() === 'BYN' ? ad.price : (ad.price_usd || '—') }}</div>
-          <div class="info-row"><strong>Комнаты:</strong> {{ ad.rooms }}</div>
-          <div class="info-row"><strong>Интерес:</strong> Уровень {{ ad.interest }}</div>
-          <div class="comment-section"><strong>КОММЕНТАРИЙ:</strong><p>{{ ad.comment || '—' }}</p></div>
-          <a [href]="ad.url" target="_blank" class="btn-primary">Смотреть на Kufar</a>
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-window" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="closeModal()">✕</button>
+      <h3>Детали объявления</h3>
+      <div class="view-content">
+        <div class="info-row"><strong>Адрес:</strong> {{ ad.address }}</div>
+        <div class="info-row">
+          <strong>Цена:</strong>
+          {{ currency() === 'BYN' ? ad.price : (ad.price_usd || '—') }}
         </div>
+        <div class="info-row"><strong>Комнаты:</strong> {{ ad.rooms }}</div>
+        <div class="info-row"><strong>Интерес:</strong> Уровень {{ ad.interest }}</div>
+        <div class="comment-section">
+          <strong>ВАШ КОММЕНТАРИЙ:</strong>
+          <p>{{ ad.comment || '—' }}</p>
+        </div>
+        <a [href]="ad.url" target="_blank" class="btn-primary">Смотреть на Kufar</a>
       </div>
     </div>
+  </div>
   }
 </div>
