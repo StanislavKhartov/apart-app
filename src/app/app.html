@@ -1,62 +1,67 @@
 <div class="main-container">
   <div class="header-flex">
     <h1>🏠 Kufar Ads</h1>
-    <span class="count-badge">Найдено: {{ displayAds().length }}</span>
+    <div class="header-actions">
+      <!-- Переключатель валют -->
+      <div class="currency-switcher">
+        <button [class.active]="currency() === 'BYN'" (click)="currency.set('BYN')">BYN</button>
+        <button [class.active]="currency() === 'USD'" (click)="currency.set('USD')">USD</button>
+      </div>
+      <span class="count-badge">Найдено: {{ displayAds().length }}</span>
+    </div>
   </div>
 
   <table class="ads-table">
     <thead>
-  <tr>
-    <th class="header-filter-cell">
-      <div class="header-inline-wrapper">
-        <span class="column-label">Комнаты</span>
-        
-        <div class="rooms-selector-box" (click)="toggleFilter($event)">
-          <span class="current-digit">{{ getRoomDigit(roomsFilter()) }}</span>
-          <span class="mini-chevron">▼</span>
+      <tr>
+        <th class="header-filter-cell">
+          <div class="header-inline-wrapper">
+            <span class="column-label">Комнаты</span>
 
-          @if (isFilterOpen()) {
-            <div class="custom-dropdown" (click)="$event.stopPropagation()">
-              @for (opt of roomOptions(); track opt) {
-                <div class="dropdown-item" 
-                     [class.active]="roomsFilter() === opt"
-                     (click)="selectRoom(opt)">
+            <div class="rooms-selector-box" (click)="toggleFilter($event)">
+              <span class="current-digit">{{ getRoomDigit(roomsFilter()) }}</span>
+              <span class="mini-chevron">▼</span>
+
+              @if (isFilterOpen()) {
+              <div class="custom-dropdown" (click)="$event.stopPropagation()">
+                @for (opt of roomOptions(); track opt) {
+                <div class="dropdown-item" [class.active]="roomsFilter() === opt" (click)="selectRoom(opt)">
                   {{ opt === 'all' ? 'Все варианты' : opt }}
                 </div>
+                }
+              </div>
               }
             </div>
-          }
-        </div>
-      </div>
-    </th>
+          </div>
+        </th>
 
-    <th class="sortable-cell" (click)="toggleSort('price')">
-      <div class="header-inline-wrapper">
-        <span class="column-label">Цена</span>
-        <span class="sort-icon">{{ sortField() === 'price' ? (sortOrder() === 'asc' ? '▲' : '▼') : '' }}</span>
-      </div>
-    </th>
+        <th class="sortable-cell" (click)="toggleSort('price')">
+          <div class="header-inline-wrapper">
+            <span class="column-label">Цена</span>
+            <span class="sort-icon">{{ sortField() === 'price' ? (sortOrder() === 'asc' ? '▲' : '▼') : '' }}</span>
+          </div>
+        </th>
 
-    <th class="label-cell">
-      <div class="header-inline-wrapper">
-        <span class="column-label">Адрес</span>
-      </div>
-    </th>
+        <th class="label-cell">
+          <div class="header-inline-wrapper">
+            <span class="column-label">Адрес</span>
+          </div>
+        </th>
 
-    <th class="sortable-cell" (click)="toggleSort('created_at')">
-      <div class="header-inline-wrapper">
-        <span class="column-label">Добавлено</span>
-        <span class="sort-icon">{{ sortField() === 'created_at' ? (sortOrder() === 'asc' ? '▲' : '▼') : '' }}</span>
-      </div>
-    </th>
-  </tr>
-</thead>
+        <th class="sortable-cell" (click)="toggleSort('created_at')">
+          <div class="header-inline-wrapper">
+            <span class="column-label">Добавлено</span>
+            <span class="sort-icon">{{ sortField() === 'created_at' ? (sortOrder() === 'asc' ? '▲' : '▼') : '' }}</span>
+          </div>
+        </th>
+      </tr>
+    </thead>
     <tbody>
       @for (ad of displayAds(); track ad.id) {
       <tr class="ad-row" [style.backgroundColor]="getBgColor(ad.interest)" (click)="openView(ad)">
         <td>{{ ad.rooms }}</td>
         <td class="price-cell" [class.negotiable]="ad.price.toLowerCase().includes('договор')">
-          {{ ad.price }}
+          {{ currency() === 'BYN' ? ad.price : (ad.price_usd || '—') }}
         </td>
         <td>
           <a [href]="ad.url" target="_blank" class="address-link" (click)="$event.stopPropagation()">
@@ -77,7 +82,10 @@
       <h3>Детали объявления</h3>
       <div class="view-content">
         <div class="info-row"><strong>Адрес:</strong> {{ ad.address }}</div>
-        <div class="info-row"><strong>Цена:</strong> {{ ad.price }}</div>
+        <div class="info-row">
+          <strong>Цена:</strong>
+          {{ currency() === 'BYN' ? ad.price : (ad.price_usd || '—') }}
+        </div>
         <div class="info-row"><strong>Комнаты:</strong> {{ ad.rooms }}</div>
         <div class="comment-section">
           <strong>Ваш комментарий:</strong>

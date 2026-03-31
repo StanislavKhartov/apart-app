@@ -2,6 +2,7 @@ export interface Ad {
   id?: string;
   rooms: string;
   price: string;
+  price_usd?: string;
   address: string;
   url: string;
   interest: number;

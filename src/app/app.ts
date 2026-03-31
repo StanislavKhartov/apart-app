@@ -13,6 +13,7 @@ import { Ad } from './ad.model';
 })
 export class App implements OnInit {
   ads = signal<Ad[]>([]);
+  currency = signal<'BYN' | 'USD'>('BYN');
   selectedAd = signal<Ad | null>(null);
   
   // Состояние фильтра
@@ -28,31 +29,38 @@ export class App implements OnInit {
   });
 
   displayAds = computed(() => {
-    let data = [...this.ads()];
-    if (this.roomsFilter() !== 'all') {
-      data = data.filter(ad => ad.rooms === this.roomsFilter());
-    }
+  let data = [...this.ads()];
+  
+  if (this.roomsFilter() !== 'all') {
+    data = data.filter(ad => ad.rooms === this.roomsFilter());
+  }
 
-    const field = this.sortField();
-    const order = this.sortOrder();
+  const field = this.sortField();
+  const order = this.sortOrder();
+  const currentCurrency = this.currency();
 
-    return data.sort((a, b) => {
-      const getVal = (item: Ad) => {
-        let val = item[field] ?? '';
-        if (field === 'price') {
-          if (String(val).toLowerCase().includes('договор')) return Infinity;
-          return parseFloat(String(val).replace(/[^0-9.]/g, '')) || 0;
-        }
-        if (field === 'created_at') return new Date(String(val)).getTime();
-        return val;
-      };
-      const valA = getVal(a);
-      const valB = getVal(b);
-      if (valA < valB) return order === 'asc' ? -1 : 1;
-      if (valA > valB) return order === 'asc' ? 1 : -1;
-      return 0;
-    });
+  return data.sort((a, b) => {
+    const getVal = (item: Ad) => {
+      if (field === 'price') {
+        // Выбираем значение в зависимости от валюты
+        const val = currentCurrency === 'BYN' ? item.price : item.price_usd;
+        
+        if (!val || String(val).toLowerCase().includes('договор')) return Infinity;
+        return parseFloat(String(val).replace(/[^0-9.]/g, '')) || 0;
+      }
+      
+      let val = item[field] ?? '';
+      if (field === 'created_at') return new Date(String(val)).getTime();
+      return val;
+    };
+
+    const valA = getVal(a);
+    const valB = getVal(b);
+    if (valA < valB) return order === 'asc' ? -1 : 1;
+    if (valA > valB) return order === 'asc' ? 1 : -1;
+    return 0;
   });
+});
 
   constructor(private kufarService: KufarService) {}
 
