@@ -16,51 +16,20 @@ export class App implements OnInit {
   currency = signal<'BYN' | 'USD'>('BYN');
   selectedAd = signal<Ad | null>(null);
   
-  // Состояние фильтра
-  roomsFilter = signal<string>('all');
-  isFilterOpen = signal<boolean>(false); // Скрыт по умолчанию
+  isFilterOpen = signal(false);
+  isPriceFilterOpen = signal(false);
 
+  roomsFilter = signal<string>('all');
   sortField = signal<keyof Ad>('created_at');
   sortOrder = signal<'asc' | 'desc'>('desc');
 
-  roomOptions = computed(() => {
-    const rooms = this.ads().map(ad => ad.rooms);
-    return ['all', ...new Set(rooms)].sort();
-  });
+  // Для ввода в инпуты (обычные переменные)
+  tempMin: number | null = null;
+  tempMax: number | null = null;
 
-  displayAds = computed(() => {
-  let data = [...this.ads()];
-  
-  if (this.roomsFilter() !== 'all') {
-    data = data.filter(ad => ad.rooms === this.roomsFilter());
-  }
-
-  const field = this.sortField();
-  const order = this.sortOrder();
-  const currentCurrency = this.currency();
-
-  return data.sort((a, b) => {
-    const getVal = (item: Ad) => {
-      if (field === 'price') {
-        // Выбираем значение в зависимости от валюты
-        const val = currentCurrency === 'BYN' ? item.price : item.price_usd;
-        
-        if (!val || String(val).toLowerCase().includes('договор')) return Infinity;
-        return parseFloat(String(val).replace(/[^0-9.]/g, '')) || 0;
-      }
-      
-      let val = item[field] ?? '';
-      if (field === 'created_at') return new Date(String(val)).getTime();
-      return val;
-    };
-
-    const valA = getVal(a);
-    const valB = getVal(b);
-    if (valA < valB) return order === 'asc' ? -1 : 1;
-    if (valA > valB) return order === 'asc' ? 1 : -1;
-    return 0;
-  });
-});
+  // Для фильтрации (сигналы)
+  appliedMin = signal<number | null>(null);
+  appliedMax = signal<number | null>(null);
 
   constructor(private kufarService: KufarService) {}
 
@@ -71,22 +40,93 @@ export class App implements OnInit {
     this.ads.set(data || []);
   }
 
-  // Переключение видимости фильтра
+  private parsePrice(val: any): number {
+    if (!val || String(val).toLowerCase().includes('договор')) return -1;
+    const num = parseFloat(String(val).replace(/[^0-9.]/g, ''));
+    return isNaN(num) ? -1 : num;
+  }
+
+  displayAds = computed(() => {
+    let data = [...this.ads()];
+    const curr = this.currency();
+
+    if (this.roomsFilter() !== 'all') {
+      data = data.filter(ad => ad.rooms === this.roomsFilter());
+    }
+
+    const min = this.appliedMin();
+    const max = this.appliedMax();
+    if (min !== null || max !== null) {
+      data = data.filter(ad => {
+        const p = this.parsePrice(curr === 'BYN' ? ad.price : ad.price_usd);
+        if (p === -1) return false;
+        return (min === null || p >= min) && (max === null || p <= max);
+      });
+    }
+
+    const field = this.sortField();
+    const order = this.sortOrder();
+    return data.sort((a, b) => {
+      const getVal = (item: Ad) => {
+        if (field === 'price') {
+          const v = curr === 'BYN' ? item.price : item.price_usd;
+          const num = this.parsePrice(v);
+          return num === -1 ? Infinity : num;
+        }
+        if (field === 'created_at') return new Date(item.created_at || 0).getTime();
+        return item[field] ?? '';
+      };
+      const vA = getVal(a); const vB = getVal(b);
+      return vA < vB ? (order === 'asc' ? -1 : 1) : (order === 'asc' ? 1 : -1);
+    });
+  });
+
+  roomOptions = computed(() => {
+    const rooms = this.ads().map(ad => ad.rooms);
+    return ['all', ...new Set(rooms)].sort();
+  });
+
+  // --- МЕТОДЫ ОТКРЫТИЯ ---
+
   toggleFilter(event: Event) {
     event.stopPropagation();
+    this.isPriceFilterOpen.set(false);
     this.isFilterOpen.update(v => !v);
   }
 
-  // Выбор комнаты
+  togglePriceFilter(event: Event) {
+    event.stopPropagation();
+    this.isFilterOpen.set(false);
+    this.isPriceFilterOpen.update(v => !v);
+    if (this.isPriceFilterOpen()) {
+      this.tempMin = this.appliedMin();
+      this.tempMax = this.appliedMax();
+    }
+  }
+
+  @HostListener('document:click')
+  closeAll() {
+    this.isFilterOpen.set(false);
+    this.isPriceFilterOpen.set(false);
+  }
+
+  // --- ДЕЙСТВИЯ ---
+
   selectRoom(option: string) {
     this.roomsFilter.set(option);
     this.isFilterOpen.set(false);
   }
 
-  // Закрытие фильтра при клике вне его области
-  @HostListener('document:click')
-  closeFilter() {
-    this.isFilterOpen.set(false);
+  applyPriceFilter() {
+    this.appliedMin.set(this.tempMin);
+    this.appliedMax.set(this.tempMax);
+    this.isPriceFilterOpen.set(false);
+  }
+
+  clearPriceFilter() {
+    this.tempMin = null;
+    this.tempMax = null;
+    this.applyPriceFilter();
   }
 
   toggleSort(field: keyof Ad) {
@@ -101,14 +141,12 @@ export class App implements OnInit {
 
   openView(ad: Ad) { this.selectedAd.set(ad); }
   closeModal() { this.selectedAd.set(null); }
-
+  getRoomDigit(roomString: string): string {
+    if (roomString === 'all') return 'Все';
+    return roomString.replace(/[^0-9+]/g, '');
+  }
   getBgColor(interest: number): string {
     const colors: any = { 1: '#fff', 2: '#f0faff', 3: '#fffcf0', 4: '#fff7f0', 5: '#fff2f0' };
     return colors[interest] || '#fff';
   }
-
-  getRoomDigit(roomString: string): string {
-  if (roomString === 'all') return 'Все';
-  return roomString.replace(/[^0-9+]/g, '');
-}
 }
